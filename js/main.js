@@ -57,8 +57,39 @@ $(function () {
 		});
 	}
 
+	//get ip address asynchronously
+	function getIpAndZip() {
+		$.ajax({ // get ip address of machine
+			url: "http://ip4.telize.com",
+			dataType: "text",
+			success: function(data) {
+				getZipfromIP(data);
+			}
+		});
+	}
+
+	// get local zip code from machine ip address asynchronously
+	function getZipfromIP(ipAddress) {
+		$.ajax({
+			url: "https://freegeoip.net/json/" + ipAddress,
+			dataType: "text json", // treat return text as json
+			success: function(data) {
+				defaultZip = data.zip_code;
+				inputText = $('#zip-code').val(defaultZip);
+			}
+		});
+	}
+
+	// must declare these variables before calling getIpAndZip();
+	var defaultZip;
+	var inputText = $('#zip-code');
+	getIpAndZip();
+
+	var button = $('button');
+
+/* SYNCHRONOUS REQUEST -- DEPRECATED
 	function getIpAddress() {
-		// use a synchronous request; will not work as asynchronous
+		
 		var xmlHttp = new XMLHttpRequest();
 		
 		// GET data, from URL, false = synchronous request
@@ -68,7 +99,9 @@ $(function () {
 	    // ip address is returned as text
 	    return xmlHttp.responseText; 
 	}
+*/
 
+/* SYNCHRONOUS REQUEST -- DEPRECATED
 	function getZipfromIP(ipAddress) {
 		var xmlHttp = new XMLHttpRequest();
 	    xmlHttp.open( "GET", "https://freegeoip.net/json/" + ipAddress, false );
@@ -76,16 +109,13 @@ $(function () {
 	    // response is a JSON string which must be converted to an object
 	    return (($.parseJSON(xmlHttp.responseText)).zip_code);
 	}
+*/
 
-	var ipAddress = getIpAddress();
-	var defaultZip = getZipfromIP(ipAddress);
-
-	var button = $('button');
-	var inputText = $('#zip-code').val(defaultZip);
+	// var ipAddress = getIpAddress();
+	//var defaultZip = getZipfromIP(ipAddress);
 
 	function processForm() {
 		var zip = inputText.val();
-
 		getCurrentTemp(zip);
 		inputText.val('');
 		inputText.focus();
