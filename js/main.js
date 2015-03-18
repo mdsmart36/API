@@ -31,85 +31,7 @@ recordLow();
 
 */
 
-//ASSIGNMENT:  	write a function that pulls out the current temp after you add a zipcode to a form and hit submit.  
-// 				It should then display the results in the html body. Apply some nice CSS.
-
-// next line is shorthand for $(document).ready()
-$(function () {
-
-	// make the api call to Weather Underground
-	function getCurrentTemp(zip) {
-		// $.ajax({
-		// 	url: "http://api.wunderground.com/api/51f3c6006c94948b/conditions/q/" + zip + ".json",
-		// 	dataType: "jsonp",
-		// 	success: function(data) {
-		// 		//console.log(data);
-		// 		var jsonObj = data.current_observation;
-		// 		var time = jsonObj.local_time_rfc822;
-		// 		var offset = jsonObj.local_tz_offset.length;
-
-		// 		// set the text with the appropriate data
-		// 		$('#date-time').text(time.slice(0, offset * (-1)));
-		// 		$('#location').text(jsonObj.display_location.full + "  " + zip);
-		// 		$('#temperature-string').text(jsonObj.temp_f + " degrees F");
-		// 		$('#temperature-icon').attr('src', jsonObj.icon_url);
-		// 	}
-		// });
-
-		$.get("http://api.wunderground.com/api/51f3c6006c94948b/conditions/q/" + zip + ".json",
-			function(data) {
-				var jsonObj = data.current_observation;
-				var time = jsonObj.local_time_rfc822;
-				var offset = jsonObj.local_tz_offset.length;
-
-				// set the text with the appropriate data
-				$('#date-time').text(time.slice(0, offset * (-1)));
-				$('#location').text(jsonObj.display_location.full + "  " + zip);
-				$('#temperature-string').text(jsonObj.temp_f + " degrees F");
-				$('#temperature-icon').attr('src', jsonObj.icon_url);
-			});
-	}
-
-	//get ip address asynchronously
-	function getIpAndZip() {
-		// $.ajax({ // get ip address of machine
-		// 	url: "http://ip4.telize.com",
-		// 	dataType: "text",
-		// 	success: function(data) {
-		// 		getZipfromIP(data);
-		// 	}
-		// });
-
-		$.get("http://ip4.telize.com", function(data) {
-			getZipfromIP(data);
-		});
-	}
-
-	// get local zip code from machine ip address asynchronously
-	function getZipfromIP(ipAddress) {
-		// $.ajax({
-		// 	url: "https://freegeoip.net/json/" + ipAddress,
-		// 	dataType: "text json", // treat return text as json
-		// 	success: function(data) {
-		// 		defaultZip = data.zip_code;
-		// 		inputText = $('#zip-code').val(defaultZip);
-		// 	}
-		// });
-
-		$.get("https://freegeoip.net/json/" + ipAddress, function(data) {
-			defaultZip = data.zip_code;
-			inputText = $('#zip-code').val(defaultZip);
-		});
-	}
-
-	// must declare these variables before calling getIpAndZip();
-	var defaultZip;
-	var inputText = $('#zip-code');
-	getIpAndZip();
-
-	var button = $('button');
-
-/* SYNCHRONOUS REQUEST -- DEPRECATED
+/* DEMONSTRATES A SYNCHRONOUS REQUEST; DO NOT USE -- DEPRECATED
 	function getIpAddress() {
 		
 		var xmlHttp = new XMLHttpRequest();
@@ -123,7 +45,7 @@ $(function () {
 	}
 */
 
-/* SYNCHRONOUS REQUEST -- DEPRECATED
+/* DEMONSTRATES A SYNCHRONOUS REQUEST; DO NOT USE -- DEPRECATED
 	function getZipfromIP(ipAddress) {
 		var xmlHttp = new XMLHttpRequest();
 	    xmlHttp.open( "GET", "https://freegeoip.net/json/" + ipAddress, false );
@@ -133,25 +55,73 @@ $(function () {
 	}
 */
 
-	// var ipAddress = getIpAddress();
-	//var defaultZip = getZipfromIP(ipAddress);
+//ASSIGNMENT:  	write a function that pulls out the current temp after you add a zipcode to a form and hit submit.  
+// 				It should then display the results in the html body. Apply some nice CSS.
 
-	function processForm() {
-		var zip = inputText.val();
-		getCurrentTemp(zip);
-		inputText.val('');
-		inputText.focus();
+// next line is shorthand for $(document).ready()
+$(function () {
+
+	function getCurrentTemp(zip) {
+		$.get("http://api.wunderground.com/api/51f3c6006c94948b/conditions/q/" + zip + ".json",
+			function(data) {
+				var jsonObj = data.current_observation;
+				var time = jsonObj.local_time_rfc822;
+				var offset = jsonObj.local_tz_offset.length;
+
+				// set the text with the appropriate data
+				$dateTime.text(time.slice(0, offset * (-1)));
+				$location.text(jsonObj.display_location.full + "  " + zip);
+				$temperatureString.text(jsonObj.temp_f + " degrees F");
+				$temperatureIcon.attr('src', jsonObj.icon_url);
+			});
 	}
 
-	// if user clicks submit button
-	button.on('click', function() {
+	//get ip address asynchronously
+	function getIpAndZip() {
+		// shortcut for performing an HTTP GET request
+		$.get("http://ip4.telize.com", function(data) {
+			getZipfromIP(data);
+		});
+	}
+
+	// get local zip code from machine ip address asynchronously
+	function getZipfromIP(ipAddress) {
+		// perform an HTTP GET request
+		$.get("https://freegeoip.net/json/" + ipAddress, function(data) {
+			defaultZip = data.zip_code;
+			$inputText = $('#zip-code').val(defaultZip);
+			$inputText.focus();
+		});
+	}
+
+	// must declare these variables before calling getIpAndZip();
+	var defaultZip;
+	var $inputText = $('#zip-code');
+
+	// variable needed in getCurrentTemp();
+	var $dateTime = $('#date-time');
+	var $location = $('#location');
+	var $temperatureString = $('#temperature-string');
+	var $temperatureIcon = $('#temperature-icon');
+	var $button = $('button');
+	
+	getIpAndZip();
+
+	function processForm() {
+		var zip = $inputText.val();
+		getCurrentTemp(zip);
+		$inputText.val('');
+		$inputText.focus();
+	}
+
+	// EVENT LISTENERS for $button and 'return' key
+
+	$button.on('click', function() {
 		processForm();
 	});
 
-	// if user presses 'return' or 'enter' while inside input text box
-	inputText.on('keypress', function(e) {
-		// when a keypress event occurs, check the keycode (ASCII?)
-		if (e.keyCode === 13) { 
+	$inputText.on('keypress', function(e) {
+		if (e.keyCode === 13) { // ASCII CODE 13 = 'RETURN'
 			processForm();
 		}
 	});
