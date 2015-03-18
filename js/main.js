@@ -39,11 +39,25 @@ $(function () {
 
 	// make the api call to Weather Underground
 	function getCurrentTemp(zip) {
-		$.ajax({
-			url: "http://api.wunderground.com/api/51f3c6006c94948b/conditions/q/" + zip + ".json",
-			dataType: "jsonp",
-			success: function(data) {
-				console.log(data);
+		// $.ajax({
+		// 	url: "http://api.wunderground.com/api/51f3c6006c94948b/conditions/q/" + zip + ".json",
+		// 	dataType: "jsonp",
+		// 	success: function(data) {
+		// 		//console.log(data);
+		// 		var jsonObj = data.current_observation;
+		// 		var time = jsonObj.local_time_rfc822;
+		// 		var offset = jsonObj.local_tz_offset.length;
+
+		// 		// set the text with the appropriate data
+		// 		$('#date-time').text(time.slice(0, offset * (-1)));
+		// 		$('#location').text(jsonObj.display_location.full + "  " + zip);
+		// 		$('#temperature-string').text(jsonObj.temp_f + " degrees F");
+		// 		$('#temperature-icon').attr('src', jsonObj.icon_url);
+		// 	}
+		// });
+
+		$.get("http://api.wunderground.com/api/51f3c6006c94948b/conditions/q/" + zip + ".json",
+			function(data) {
 				var jsonObj = data.current_observation;
 				var time = jsonObj.local_time_rfc822;
 				var offset = jsonObj.local_tz_offset.length;
@@ -53,30 +67,38 @@ $(function () {
 				$('#location').text(jsonObj.display_location.full + "  " + zip);
 				$('#temperature-string').text(jsonObj.temp_f + " degrees F");
 				$('#temperature-icon').attr('src', jsonObj.icon_url);
-			}
-		});
+			});
 	}
 
 	//get ip address asynchronously
 	function getIpAndZip() {
-		$.ajax({ // get ip address of machine
-			url: "http://ip4.telize.com",
-			dataType: "text",
-			success: function(data) {
-				getZipfromIP(data);
-			}
+		// $.ajax({ // get ip address of machine
+		// 	url: "http://ip4.telize.com",
+		// 	dataType: "text",
+		// 	success: function(data) {
+		// 		getZipfromIP(data);
+		// 	}
+		// });
+
+		$.get("http://ip4.telize.com", function(data) {
+			getZipfromIP(data);
 		});
 	}
 
 	// get local zip code from machine ip address asynchronously
 	function getZipfromIP(ipAddress) {
-		$.ajax({
-			url: "https://freegeoip.net/json/" + ipAddress,
-			dataType: "text json", // treat return text as json
-			success: function(data) {
-				defaultZip = data.zip_code;
-				inputText = $('#zip-code').val(defaultZip);
-			}
+		// $.ajax({
+		// 	url: "https://freegeoip.net/json/" + ipAddress,
+		// 	dataType: "text json", // treat return text as json
+		// 	success: function(data) {
+		// 		defaultZip = data.zip_code;
+		// 		inputText = $('#zip-code').val(defaultZip);
+		// 	}
+		// });
+
+		$.get("https://freegeoip.net/json/" + ipAddress, function(data) {
+			defaultZip = data.zip_code;
+			inputText = $('#zip-code').val(defaultZip);
 		});
 	}
 
