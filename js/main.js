@@ -61,6 +61,17 @@ recordLow();
 // next line is shorthand for $(document).ready()
 $(function () {
 
+	// must declare these variables before calling getIpAndZip();
+	var defaultZip;
+	var $inputText = $('#zip-code');
+
+	// variable needed in getCurrentTemp();
+	var $dateTime = $('#date-time');
+	var $location = $('#location');
+	var $temperatureString = $('#temperature-string');
+	var $temperatureIcon = $('#temperature-icon');
+	var $button = $('button');
+
 	function getCurrentTemp(zip) {
 		$.get("http://api.wunderground.com/api/51f3c6006c94948b/conditions/q/" + zip + ".json",
 			function(data) {
@@ -94,25 +105,14 @@ $(function () {
 		});
 	}
 
-	// must declare these variables before calling getIpAndZip();
-	var defaultZip;
-	var $inputText = $('#zip-code');
-
-	// variable needed in getCurrentTemp();
-	var $dateTime = $('#date-time');
-	var $location = $('#location');
-	var $temperatureString = $('#temperature-string');
-	var $temperatureIcon = $('#temperature-icon');
-	var $button = $('button');
-	
-	getIpAndZip();
-
 	function processForm() {
 		var zip = $inputText.val();
 		getCurrentTemp(zip);
 		$inputText.val('');
 		$inputText.focus();
 	}
+
+	getIpAndZip();
 
 	// EVENT LISTENERS for $button and 'return' key
 
